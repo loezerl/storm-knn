@@ -5,11 +5,16 @@
 - Bolts: componente responsável pelo processamento dos dados.
 - Testar o storm com estruturas do MOA.
 
+- A topologia foi definida dentro do Prequential, não sei se vai funcionar, mas é lá que eu monto a topologia.
+- O classificador se tornou um Bolt, entretando os métodos dele não vão utilizar o esquema de bolt/spout do storm dentro de sua estrutura.
+
+**TODO:**
+- Implementar métodos treino e teste do classificador.
+- Realizar testes com a base.
+- Ver se é necessário exclusão mútua nas variáveis do objeto Prequential.
+- Anotar quais parametros eu posso mudar para aumentar o número de threads e jobs.
 
 
-- O calculo da distancia euclideana vai emitir uma tupla (Instance, Double), vou usar a mesma estratégia da variável que usei no flink.
-- O prequential será um spout ou um bolt, ainda não tenho certeza.
-- Os procedimentos do classificador serão bolts, provavelmente terei que usar a variavel para setar eles.
-http://storm.apache.org/releases/1.1.0/Tutorial.html
-
+Links:
 https://stackoverflow.com/questions/32053795/how-to-use-apache-storm-tuple
+http://storm.apache.org/releases/1.1.0/Tutorial.html
