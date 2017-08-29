@@ -66,8 +66,8 @@ public class Experimenter {
 
             try {
                     Instance value = (Instance)tuple.getValue(0);
-                    System.out.println(value);
                     Double dist = Similarity.EuclideanDistance(value, _Example);
+//                    System.out.println("[" + value + "] - [" + dist + "]");
                     _collector.emit(tuple, new Values(value, dist));
                     _collector.ack(tuple);
             } catch(Exception e){
@@ -95,7 +95,7 @@ public class Experimenter {
         conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
 
         builder.setSpout("Instance", new GetInstances(), 10);
-        builder.setBolt("euclidean_distance", new EuclideanDistanceBolt(), 2);
+        builder.setBolt("euclidean_distance", new EuclideanDistanceBolt(), 2).shuffleGrouping("Instance");
 
 //        builder.setSpout("word", new TestWordSpout(), 10);
 //        builder.setBolt("exclaim1", new ExclamationBolt(), 3).shuffleGrouping("word");
