@@ -12,3 +12,4 @@
 - Os procedimentos do classificador serão bolts, provavelmente terei que usar a variavel para setar eles.
 http://storm.apache.org/releases/1.1.0/Tutorial.html
 
+https://stackoverflow.com/questions/32053795/how-to-use-apache-storm-tuple
