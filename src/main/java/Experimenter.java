@@ -94,8 +94,9 @@ public class Experimenter {
 
         conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
 
-        builder.setSpout("Instance", new GetInstances(), 10);
-        builder.setBolt("euclidean_distance", new EuclideanDistanceBolt(), 2).shuffleGrouping("Instance");
+        builder.setSpout("Instances", new GetInstances(), 10);
+        builder.setBolt("Euclidean Distance", new EuclideanDistanceBolt(), 2).shuffleGrouping("Instance");
+
 
 //        builder.setSpout("word", new TestWordSpout(), 10);
 //        builder.setBolt("exclaim1", new ExclamationBolt(), 3).shuffleGrouping("word");
@@ -110,11 +111,11 @@ public class Experimenter {
             StormSubmitter.submitTopologyWithProgressBar(args[0], conf, builder.createTopology());
         }
         else {
-
+            conf.setMaxTaskParallelism(3);
             LocalCluster cluster = new LocalCluster();
-            cluster.submitTopology("test", conf, builder.createTopology());
+            cluster.submitTopology("storm-knn", conf, builder.createTopology());
             Utils.sleep(10000);
-            cluster.killTopology("test");
+            cluster.killTopology("storm-knn");
             cluster.shutdown();
         }
     }

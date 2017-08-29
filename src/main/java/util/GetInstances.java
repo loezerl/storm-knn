@@ -1,7 +1,5 @@
 package util;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.InputStreamProgressMonitor;
 import moa.streams.ArffFileStream;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
