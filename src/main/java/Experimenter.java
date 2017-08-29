@@ -1,4 +1,5 @@
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.core.InputStreamProgressMonitor;
 import moa.streams.ArffFileStream;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
@@ -89,16 +90,18 @@ public class Experimenter {
 
         _Example = file.nextInstance().getData();
 
+        Config conf = new Config();
 
-        builder.setSpout("Instance", new GetInstances(file), 10);
+        conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
+
+        builder.setSpout("Instance", new GetInstances(), 10);
         builder.setBolt("euclidean_distance", new EuclideanDistanceBolt(), 2);
 
 //        builder.setSpout("word", new TestWordSpout(), 10);
 //        builder.setBolt("exclaim1", new ExclamationBolt(), 3).shuffleGrouping("word");
 //        builder.setBolt("exclaim2", new ExclamationBolt(), 2).shuffleGrouping("exclaim1");
 
-        Config conf = new Config();
-        conf.setDebug(false);
+        conf.setDebug(true);
 
 
         if (args != null && args.length > 0) {

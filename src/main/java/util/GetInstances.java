@@ -22,19 +22,33 @@ import java.util.Map;
 
 
 public class GetInstances extends BaseRichSpout {
-    public static Logger LOG = LoggerFactory.getLogger(InputStreamProgressMonitor.class);
+    public static Logger LOG = LoggerFactory.getLogger(GetInstances.class);
     SpoutOutputCollector _collector;
     ArffFileStream _file;
 
-    public GetInstances(ArffFileStream file){this._file = file;}
+    public GetInstances(){}
 
     @Override
-    public void open(Map conf, TopologyContext context, SpoutOutputCollector collector){this._collector = collector;}
+    public void open(Map conf, TopologyContext context, SpoutOutputCollector collector){
+
+        this._collector = collector;
+        try {
+            this._file = new ArffFileStream(conf.get("arff_file").toString(), -1);
+        } catch (Exception e) {
+            this._collector.reportError(e);
+        }
+    }
+
 
     @Override
     public void nextTuple(){
         if(_file.hasMoreInstances()){
-            this._collector.emit(new Values(new Object[]{_file.nextInstance()}));
+            try {
+                this._collector.emit(new Values(new Object[]{_file.nextInstance()}));
+            }catch (Exception e){
+                System.out.println("Eh um pais da Europa, conhecido pelos moinhos e flores, seu idioma eh o Holandes! ERROW! : ");
+                this._collector.reportError(e);
+            }
         }
     }
 
