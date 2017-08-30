@@ -100,6 +100,9 @@ public class Experimenter {
 
         Config conf = new Config();
 
+
+        //"/home/loezerl-fworks/Downloads/kyoto.arff"
+        // "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff"
         conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
 
         Classifier myClassifier = new KNN(7, 25, "euclidean");
