@@ -8,8 +8,9 @@
 - A topologia foi definida dentro do Prequential, não sei se vai funcionar, mas é lá que eu monto a topologia.
 - O classificador se tornou um Bolt, entretando os métodos dele não vão utilizar o esquema de bolt/spout do storm dentro de sua estrutura.
 
+
 **TODO:**
-- Implementar métodos treino e teste do classificador.
+- Arrumar o erro: `java.lang.IllegalArgumentException: Topology conf is not json-serializable`.
 - Realizar testes com a base.
 - Ver se é necessário exclusão mútua nas variáveis do objeto Prequential.
 - Anotar quais parametros eu posso mudar para aumentar o número de threads e jobs.

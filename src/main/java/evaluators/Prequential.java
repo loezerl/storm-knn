@@ -25,12 +25,20 @@ public class Prequential extends Evaluator{
     private int[][] confusion_matrix;
     private TopologyBuilder _builder;
 
-    public Prequential(Classifier _classifier, ArffFileStream data, TopologyBuilder builder, Config conf){
+    public Prequential(Classifier _classifier, ArffFileStream data, int confirm_, int miss_){
         super(_classifier, data);
-        this._builder = builder;
-        conf.put("my_classifier", mClassifier);
-        conf.put("my_confirm", confirm);
-        conf.put("my_miss", miss);
+//        this._builder = builder;
+//        conf.registerSerialization(Classifier.class);
+//        conf.put("my_classifier", mClassifier);
+//        conf.put("my_confirm", confirm);
+//        conf.put("my_miss", miss);
+
+        this.confirm = confirm_;
+        this.miss = miss_;
+
+//        this._builder.setSpout("Instances", new GetInstances(), 10);
+//        this._builder.setBolt("Prequential", new Classifier_Prequential(), 2).shuffleGrouping("Instances");
+//        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 2).shuffleGrouping("Prequential");
     }
 
     @Override
@@ -45,10 +53,6 @@ public class Prequential extends Evaluator{
          * - Imprimir um relatório log final com os resultados, aka acuracia, calculos de erro (kappa), etc..
          *
          * */
-
-        this._builder.setSpout("Instances", new GetInstances(), 10);
-        this._builder.setBolt("Prequential", new Classifier_Prequential(), 2).shuffleGrouping("Instances");
-        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 2).shuffleGrouping("Prequential");
 
         System.out.println("\n\n\nTotal acertos: " + confirm + " Total erros: " + miss);
 
