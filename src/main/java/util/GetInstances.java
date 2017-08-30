@@ -44,7 +44,6 @@ public class GetInstances extends BaseRichSpout {
             try {
                 this._collector.emit(new Values(new Object[]{_file.nextInstance().getData()}));
             }catch (Exception e){
-                System.out.println("Eh um pais da Europa, conhecido pelos moinhos e flores, seu idioma eh o Holandes! ERROW! : ");
                 this._collector.reportError(e);
             }
         }

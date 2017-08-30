@@ -1,6 +1,7 @@
 package evaluators;
 
 import classifiers.Classifier;
+import classifiers.KNN;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.streams.ArffFileStream;
 import org.apache.storm.Config;
@@ -14,6 +15,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import util.GetInstances;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -25,20 +27,20 @@ public class Prequential extends Evaluator{
     private int[][] confusion_matrix;
     private TopologyBuilder _builder;
 
-    public Prequential(Classifier _classifier, ArffFileStream data, int confirm_, int miss_){
+    public Prequential(Classifier _classifier, ArffFileStream data, TopologyBuilder builder, Config conf){
         super(_classifier, data);
-//        this._builder = builder;
-//        conf.registerSerialization(Classifier.class);
-//        conf.put("my_classifier", mClassifier);
-//        conf.put("my_confirm", confirm);
-//        conf.put("my_miss", miss);
+        this._builder = builder;
 
-        this.confirm = confirm_;
-        this.miss = miss_;
+        conf.put("knn-n", 7);
+        conf.put("knn-wsize", 25);
+        conf.put("knn-f", "euclidean");
 
-//        this._builder.setSpout("Instances", new GetInstances(), 10);
-//        this._builder.setBolt("Prequential", new Classifier_Prequential(), 2).shuffleGrouping("Instances");
-//        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 2).shuffleGrouping("Prequential");
+        conf.put("my_confirm", confirm);
+        conf.put("my_miss", miss);
+
+        this._builder.setSpout("Instances", new GetInstances(), 10);
+        this._builder.setBolt("Prequential", new Classifier_Prequential(), 2).shuffleGrouping("Instances");
+        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 2).shuffleGrouping("Prequential");
     }
 
     @Override
@@ -66,7 +68,9 @@ public class Prequential extends Evaluator{
         public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
             _collector = collector;
             try{
-                myClassifier = (Classifier) conf.get("my_classifier");
+                //myClassifier = (Classifier) conf.get("my_classifier");
+                String aux = conf.get("knn-f").toString();
+                myClassifier = new KNN(((Long) conf.get("knn-n")).intValue(), ((Long)conf.get("knn-wsize")).intValue(), aux);
             }catch (Exception e){
                 _collector.reportError(e);
             }
@@ -100,8 +104,8 @@ public class Prequential extends Evaluator{
         public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
             _collector = collector;
             try{
-                confirm = (Integer) conf.get("my_confirm");
-                miss = (Integer) conf.get("my_miss");
+                confirm = ((Long) conf.get("my_confirm")).intValue();
+                miss = ((Long) conf.get("my_miss")).intValue();
                 _collector = collector;
             }catch (Exception e){
                 _collector.reportError(e);
@@ -122,6 +126,11 @@ public class Prequential extends Evaluator{
 
         @Override
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        }
+
+        @Override
+        public void cleanup(){
+            System.out.println("\n\n\nTotal acertos: " + confirm + " Total erros: " + miss);
         }
     }
 

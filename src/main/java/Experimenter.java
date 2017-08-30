@@ -61,10 +61,11 @@ public class Experimenter {
 
     public static class EuclideanDistanceBolt extends BaseRichBolt{
         OutputCollector _collector;
-
+        Classifier classsss;
         @Override
         public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
             _collector = collector;
+            classsss = new KNN((int)conf.get("knn-n"), (int)conf.get("knn-wsize"), conf.get("knn-f").toString());
         }
 
         @Override
@@ -95,27 +96,30 @@ public class Experimenter {
 
         ArffFileStream file = new ArffFileStream("/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff", -1);
 
+        _Example = file.nextInstance().getData();
+
         Config conf = new Config();
 
         conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
 
         Classifier myClassifier = new KNN(7, 25, "euclidean");
 
-        int confirm =0;
-        int miss = 0;
+//        int confirm =0;
+//        int miss = 0;
+//
+//        conf.put("knn-n", 7);
+//        conf.put("knn-wsize", 25);
+//        conf.put("knn-f", "euclidean");
+////        conf.put("my_classifier", myClassifier);
+//        conf.put("my_confirm", confirm);
+//        conf.put("my_miss", miss);
 
-        conf.registerSerialization(Classifier.class);
-        conf.put("my_classifier", myClassifier);
-        conf.put("my_confirm", confirm);
-        conf.put("my_miss", miss);
+        Evaluator myEvaluator = new Prequential(myClassifier, file, builder, conf);
 
-        Evaluator myEvaluator = new Prequential(myClassifier, file, confirm, miss);
-
-
-
-        builder.setSpout("Instances", new GetInstances(), 10);
-        builder.setBolt("Prequential", new Prequential.Classifier_Prequential(), 2).shuffleGrouping("Instances");
-        builder.setBolt("Prequential_Results", new Prequential.Prequential_Results(), 2).shuffleGrouping("Prequential");
+//        builder.setSpout("Instances", new GetInstances(), 10);
+//        builder.setBolt("ED", new EuclideanDistanceBolt(), 2).shuffleGrouping("Instances");
+//        builder.setBolt("Prequential", new Prequential.Classifier_Prequential(), 2).shuffleGrouping("Instances");
+//        builder.setBolt("Prequential_Results", new Prequential.Prequential_Results(), 2).shuffleGrouping("Prequential");
 
         conf.setDebug(true);
 

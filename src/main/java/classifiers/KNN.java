@@ -23,7 +23,7 @@ public class KNN extends Classifier{
     public KNN(int kneighbours, int wsize, String function) {
         K = kneighbours;
         WindowSize = wsize;
-        if(function == "euclidean"){
+        if(function.equals("euclidean")){
             DistanceFunction = "euclidean";
         }
         else{
@@ -33,6 +33,11 @@ public class KNN extends Classifier{
         Window = new ArrayList<>(wsize);
 
     }
+
+    public int getK(){return K;}
+    public int getWindowSize(){return WindowSize;}
+    public String getFunction(){return DistanceFunction;}
+
     @Override
     public boolean test(Instance example_) throws Exception{
 
@@ -53,8 +58,14 @@ public class KNN extends Classifier{
                 }
         );
 
+        List<InstanceDouble> K_neighbours;
         //Pega os K vizinhos
-        List<InstanceDouble> K_neighbours = new ArrayList<InstanceDouble>(distances.collect(Collectors.toList()).subList(0, K));
+
+        if (Window.size() < K){
+            K_neighbours = new ArrayList<InstanceDouble>(distances.collect(Collectors.toList()).subList(0, Window.size()));
+        }else{
+            K_neighbours = new ArrayList<InstanceDouble>(distances.collect(Collectors.toList()).subList(0, K));
+        }
 
         int[] major_vote = new int[example_.classAttribute().numValues()];
 
