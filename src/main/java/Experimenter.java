@@ -7,6 +7,7 @@ import moa.streams.ArffFileStream;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
+import org.apache.storm.shade.com.fasterxml.jackson.core.util.InternCache;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -20,10 +21,7 @@ import util.GetInstances;
 import util.InstanceDouble;
 import util.Similarity;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,21 +89,23 @@ public class Experimenter {
 
 
     public static void main(String[] args) throws Exception {
-        TopologyBuilder builder = new TopologyBuilder();
 
 
-        ArffFileStream file = new ArffFileStream("/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff", -1);
-
-        _Example = file.nextInstance().getData();
-
-        Config conf = new Config();
-
-
-        //"/home/loezerl-fworks/Downloads/kyoto.arff"
-        // "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff"
-        conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
-
-        Classifier myClassifier = new KNN(7, 25, "euclidean");
+//        TopologyBuilder builder = new TopologyBuilder();
+//
+//
+//        ArffFileStream file = new ArffFileStream("/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff", -1);
+//
+//        _Example = file.nextInstance().getData();
+//
+//        Config conf = new Config();
+//
+//
+//        //"/home/loezerl-fworks/Downloads/kyoto.arff"
+//        // "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff"
+//        conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
+//
+//        Classifier myClassifier = new KNN(7, 25, "euclidean");
 
 //        int confirm =0;
 //        int miss = 0;
@@ -117,22 +117,22 @@ public class Experimenter {
 //        conf.put("my_confirm", confirm);
 //        conf.put("my_miss", miss);
 
-        Evaluator myEvaluator = new Prequential(myClassifier, file, builder, conf);
+//        Evaluator myEvaluator = new Prequential(myClassifier, file, builder, conf);
 
 //        builder.setSpout("Instances", new GetInstances(), 10);
 //        builder.setBolt("ED", new EuclideanDistanceBolt(), 2).shuffleGrouping("Instances");
 //        builder.setBolt("Prequential", new Prequential.Classifier_Prequential(), 2).shuffleGrouping("Instances");
 //        builder.setBolt("Prequential_Results", new Prequential.Prequential_Results(), 2).shuffleGrouping("Prequential");
 
-        conf.setDebug(true);
-
-        conf.setMaxTaskParallelism(3);
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("storm-knn", conf, builder.createTopology());
-        Utils.sleep(10000);
-        cluster.killTopology("storm-knn");
-        cluster.shutdown();
-        myEvaluator.run();
+//        conf.setDebug(true);
+//
+//        conf.setMaxTaskParallelism(3);
+//        LocalCluster cluster = new LocalCluster();
+//        cluster.submitTopology("storm-knn", conf, builder.createTopology());
+//        Utils.sleep(10000);
+//        cluster.killTopology("storm-knn");
+//        cluster.shutdown();
+//        myEvaluator.run();
 
     }
 }

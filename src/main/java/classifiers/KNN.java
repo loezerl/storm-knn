@@ -1,12 +1,11 @@
 package classifiers;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import org.apache.storm.shade.com.fasterxml.jackson.core.util.InternCache;
 import util.InstanceDouble;
 import util.Similarity;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,27 +66,34 @@ public class KNN extends Classifier{
             K_neighbours = new ArrayList<InstanceDouble>(distances.collect(Collectors.toList()).subList(0, K));
         }
 
-        int[] major_vote = new int[example_.classAttribute().numValues()];
+
+        Map majorvote = new HashMap<Double, Integer>();
 
         for(InstanceDouble x: K_neighbours){
-            int aux = (int)x.key.classValue();
-            major_vote[aux]++;
-        }
-
-        int bestclass_dist = -600;
-        int bestclass_label = -600;
-
-
-        for(int i=0; i< major_vote.length; i++){
-            if(major_vote[i] > bestclass_dist){
-                bestclass_label = i;
-                bestclass_dist = major_vote[i];
+            if(majorvote.containsKey(x.key.classValue())){
+                Integer aux = (Integer)majorvote.get(x.key.classValue());
+                majorvote.put(x.key.classValue(), aux + 1);
+            }else{
+                majorvote.put(x.key.classValue(), 1);
             }
         }
 
-        int targetclass = (int)example_.classValue();
+        Integer bestclass_vote = -600;
+        Double bestclass_label = -600.0;
 
-        if(targetclass == bestclass_label)
+        Iterator<Map.Entry<Double, Integer>> it = majorvote.entrySet().iterator();
+
+        while(it.hasNext()){
+            Map.Entry<Double, Integer> pair = it.next();
+            if(pair.getValue() > bestclass_vote){
+                bestclass_label = pair.getKey();
+                bestclass_vote = pair.getValue();
+            }
+        }
+
+        Double targetclass = example_.classValue();
+
+        if(targetclass.equals(bestclass_label))
             return true;
 
         return false;
