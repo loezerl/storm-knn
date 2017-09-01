@@ -8,6 +8,7 @@ import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.shade.com.fasterxml.jackson.core.util.InternCache;
+import org.apache.storm.shade.org.apache.commons.lang.SerializationUtils;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -21,14 +22,16 @@ import util.GetInstances;
 import util.InstanceDouble;
 import util.Similarity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Created by loezerl-fworks on 23/08/17.
  */
-
 
 
 
@@ -88,24 +91,35 @@ public class Experimenter {
 
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
 
-//        TopologyBuilder builder = new TopologyBuilder();
-//
-//
-//        ArffFileStream file = new ArffFileStream("/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff", -1);
+        //TopologyBuilder builder = new TopologyBuilder();
+
+
+        ArffFileStream file = new ArffFileStream("/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff", -1);
 //
 //        _Example = file.nextInstance().getData();
-//
-//        Config conf = new Config();
-//
-//
-//        //"/home/loezerl-fworks/Downloads/kyoto.arff"
-//        // "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff"
-//        conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
-//
-//        Classifier myClassifier = new KNN(7, 25, "euclidean");
+
+        //Config conf = new Config();
+
+        //"/home/loezerl-fworks/Downloads/kyoto.arff"
+        // "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff"
+        //conf.put("arff_file", "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff");
+
+        KNN myClassifier = new KNN(7, 25, "euclidean");
+
+        try{
+            //new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(myClassifier);
+            SerializationUtils.serialize(myClassifier);
+            System.out.println("Kasino print");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            System.exit(1);
+        }
+
+
+        System.exit(2);
 
 //        int confirm =0;
 //        int miss = 0;
@@ -113,7 +127,8 @@ public class Experimenter {
 //        conf.put("knn-n", 7);
 //        conf.put("knn-wsize", 25);
 //        conf.put("knn-f", "euclidean");
-////        conf.put("my_classifier", myClassifier);
+//        conf.registerSerialization(KNN.class);
+//          conf.put("my_classifier", myClassifier);
 //        conf.put("my_confirm", confirm);
 //        conf.put("my_miss", miss);
 
@@ -124,7 +139,7 @@ public class Experimenter {
 //        builder.setBolt("Prequential", new Prequential.Classifier_Prequential(), 2).shuffleGrouping("Instances");
 //        builder.setBolt("Prequential_Results", new Prequential.Prequential_Results(), 2).shuffleGrouping("Prequential");
 
-//        conf.setDebug(true);
+//        conf.setDebug(false);
 //
 //        conf.setMaxTaskParallelism(3);
 //        LocalCluster cluster = new LocalCluster();

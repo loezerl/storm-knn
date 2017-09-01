@@ -40,7 +40,7 @@ public class Prequential extends Evaluator{
 
         this._builder.setSpout("Instances", new GetInstances(), 10);
         this._builder.setBolt("Prequential", new Classifier_Prequential(), 2).shuffleGrouping("Instances");
-        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 2).shuffleGrouping("Prequential");
+        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 1).shuffleGrouping("Prequential");
     }
 
     @Override

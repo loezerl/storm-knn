@@ -10,7 +10,6 @@
 - Arrumar o erro: `java.lang.IllegalArgumentException: Topology conf is not json-serializable`.
 - Consegui arrumar o erro acima adicionando os parametros do KNN no mapa Config, entretanto é uma solução grotesca.
 - Procurar uma solução melhor para esse problema de colocar o objeto no Map.
-- **Averigar se o método de comparar a classe é um bom método.**
 - Pegar de algum jeito os valores true e false.
 - Realizar testes com a base.
 - Ver se é necessário exclusão mútua nas variáveis do objeto Prequential.

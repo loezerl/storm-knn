@@ -5,6 +5,7 @@ import org.apache.storm.shade.com.fasterxml.jackson.core.util.InternCache;
 import util.InstanceDouble;
 import util.Similarity;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,7 +13,7 @@ import java.util.stream.Stream;
 /**
  * Created by loezerl-fworks on 24/08/17.
  */
-public class KNN extends Classifier{
+public class KNN extends Classifier implements Serializable{
 
     private int K;
     private int WindowSize;
