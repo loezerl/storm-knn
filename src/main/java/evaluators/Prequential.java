@@ -15,6 +15,9 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import util.GetInstances;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -30,16 +33,11 @@ public class Prequential extends Evaluator{
     public Prequential(Classifier _classifier, ArffFileStream data, TopologyBuilder builder, Config conf){
         super(_classifier, data);
         this._builder = builder;
-
-        conf.put("knn-n", 7);
-        conf.put("knn-wsize", 25);
-        conf.put("knn-f", "euclidean");
-
         conf.put("my_confirm", confirm);
         conf.put("my_miss", miss);
 
-        this._builder.setSpout("Instances", new GetInstances(), 10);
-        this._builder.setBolt("Prequential", new Classifier_Prequential(), 2).shuffleGrouping("Instances");
+        this._builder.setSpout("Instances", new GetInstances(), 1);
+        this._builder.setBolt("Prequential", new Classifier_Prequential(), 1).shuffleGrouping("Instances");
         this._builder.setBolt("Prequential_Results", new Prequential_Results(), 1).shuffleGrouping("Prequential");
     }
 
@@ -67,12 +65,22 @@ public class Prequential extends Evaluator{
         @Override
         public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
             _collector = collector;
-            try{
-                //myClassifier = (Classifier) conf.get("my_classifier");
-                String aux = conf.get("knn-f").toString();
-                myClassifier = new KNN(((Long) conf.get("knn-n")).intValue(), ((Long)conf.get("knn-wsize")).intValue(), aux);
-            }catch (Exception e){
-                _collector.reportError(e);
+
+            try {
+                FileInputStream fileIn = new FileInputStream(conf.get("classifier_path").toString());
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                myClassifier = (Classifier) in.readObject();
+                in.close();
+                fileIn.close();
+
+            }catch(IOException i) {
+                i.printStackTrace();
+                System.exit(1);
+
+            }catch(ClassNotFoundException c) {
+                System.out.println("Classifier class not found");
+                c.printStackTrace();
+                System.exit(1);
             }
         }
 

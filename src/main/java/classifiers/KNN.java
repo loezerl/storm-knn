@@ -15,6 +15,8 @@ import java.util.stream.Stream;
  */
 public class KNN extends Classifier implements Serializable{
 
+    private static final long serialVersionUID = 980377128340943649L;
+
     private int K;
     private int WindowSize;
     private String DistanceFunction;
@@ -34,9 +36,37 @@ public class KNN extends Classifier implements Serializable{
 
     }
 
-    public int getK(){return K;}
-    public int getWindowSize(){return WindowSize;}
-    public String getFunction(){return DistanceFunction;}
+    public int getK() {
+        return K;
+    }
+
+    public void setK(int k) {
+        K = k;
+    }
+
+    public int getWindowSize() {
+        return WindowSize;
+    }
+
+    public void setWindowSize(int windowSize) {
+        WindowSize = windowSize;
+    }
+
+    public String getDistanceFunction() {
+        return DistanceFunction;
+    }
+
+    public void setDistanceFunction(String distanceFunction) {
+        DistanceFunction = distanceFunction;
+    }
+
+    public List<Instance> getWindow() {
+        return Window;
+    }
+
+    public void setWindow(List<Instance> window) {
+        Window = window;
+    }
 
     @Override
     public boolean test(Instance example_) throws Exception{
