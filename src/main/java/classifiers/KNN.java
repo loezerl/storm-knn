@@ -1,7 +1,6 @@
 package classifiers;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import org.apache.storm.shade.com.fasterxml.jackson.core.util.InternCache;
 import util.InstanceDouble;
 import util.Similarity;
 
@@ -22,6 +21,7 @@ public class KNN extends Classifier implements Serializable{
     private String DistanceFunction;
     private List<Instance> Window;
 
+
     public KNN(int kneighbours, int wsize, String function) {
         K = kneighbours;
         WindowSize = wsize;
@@ -33,8 +33,9 @@ public class KNN extends Classifier implements Serializable{
             System.exit(1);
         }
         Window = new ArrayList<>(wsize);
-
     }
+
+
 
     public int getK() {
         return K;
@@ -69,7 +70,7 @@ public class KNN extends Classifier implements Serializable{
     }
 
     @Override
-    public boolean test(Instance example_) throws Exception{
+    public synchronized boolean test(Instance example_) throws Exception{
 
         if(Window.size() == 0){return false;}
 
@@ -131,7 +132,7 @@ public class KNN extends Classifier implements Serializable{
     }
 
     @Override
-    public void train(Instance data){
+    public synchronized void  train(Instance data){
         /**
          * Atente-se aqui em relação a exclusão mútua.
          * É provavel que as estruturas de array dos frameworks possuam mutex interno, mas é necessário verificar isso em cada framework.

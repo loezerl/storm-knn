@@ -43,27 +43,29 @@ public class Experimenter {
         TopologyBuilder builder = new TopologyBuilder();
         Config conf = new Config();
 
+    //    conf.setNumWorkers(2);
 
         String DIABETES_DATABASE = "/home/loezerl-fworks/IdeaProjects/Experimenter/diabetes.arff";
         String KYOTO_DATABASE = "/home/loezerl-fworks/Downloads/kyoto.arff";
 
-        ArffFileStream file = new ArffFileStream(DIABETES_DATABASE, -1);
+        ArffFileStream file = new ArffFileStream(KYOTO_DATABASE, -1);
 
-        conf.put("arff_file", DIABETES_DATABASE);
+        conf.put("arff_file", KYOTO_DATABASE);
 
-        KNN myClassifier = new KNN(7, 25, "euclidean");
+        KNN myClassifier = new KNN(7, 300, "euclidean");
+        Classifier.setInstance(myClassifier);
+
         Evaluator myEvaluator = new Prequential(myClassifier, file, builder, conf);
-        String path = "knn.ser";
-        SerializeClassifier(myClassifier, path);
-        conf.put("classifier_path", path);
+
 
         conf.setDebug(false);
-        conf.setMaxTaskParallelism(3);
+//        conf.setMaxTaskParallelism(3);
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("storm-knn", conf, builder.createTopology());
         Utils.sleep(10000);
         cluster.killTopology("storm-knn");
         cluster.shutdown();
+
     }
 
 }

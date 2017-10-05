@@ -34,6 +34,7 @@ public class GetInstances extends BaseRichSpout {
             this._file = new ArffFileStream(conf.get("arff_file").toString(), -1);
         } catch (Exception e) {
             this._collector.reportError(e);
+            System.err.println(e.getMessage());
         }
     }
 
@@ -45,7 +46,11 @@ public class GetInstances extends BaseRichSpout {
                 this._collector.emit(new Values(new Object[]{_file.nextInstance().getData()}));
             }catch (Exception e){
                 this._collector.reportError(e);
+                System.err.println(e.getMessage());
             }
+        }
+        else{
+            System.err.println("ACABARAM TODAS AS INSTANCIAS");
         }
     }
 

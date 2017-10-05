@@ -33,12 +33,13 @@ public class Prequential extends Evaluator{
     public Prequential(Classifier _classifier, ArffFileStream data, TopologyBuilder builder, Config conf){
         super(_classifier, data);
         this._builder = builder;
-        conf.put("my_confirm", confirm);
-        conf.put("my_miss", miss);
 
         this._builder.setSpout("Instances", new GetInstances(), 1);
-        this._builder.setBolt("Prequential", new Classifier_Prequential(), 1).shuffleGrouping("Instances");
-        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 1).shuffleGrouping("Prequential");
+        this._builder.setBolt("Prequential", new Classifier_Prequential(), 1)
+                .setNumTasks(1)
+                .shuffleGrouping("Instances");
+        this._builder.setBolt("Prequential_Results", new Prequential_Results(), 1)
+                .shuffleGrouping("Prequential");
     }
 
     @Override
@@ -61,25 +62,18 @@ public class Prequential extends Evaluator{
     public static class Classifier_Prequential extends BaseRichBolt{
         OutputCollector _collector;
         Classifier myClassifier;
+        Long instances_ = new Long(0);
+        Long hits_ = new Long(0);
 
         @Override
         public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
             _collector = collector;
 
             try {
-                FileInputStream fileIn = new FileInputStream(conf.get("classifier_path").toString());
-                ObjectInputStream in = new ObjectInputStream(fileIn);
-                myClassifier = (Classifier) in.readObject();
-                in.close();
-                fileIn.close();
+                myClassifier = Classifier.getInstance();
 
-            }catch(IOException i) {
-                i.printStackTrace();
-                System.exit(1);
-
-            }catch(ClassNotFoundException c) {
-                System.out.println("Classifier class not found");
-                c.printStackTrace();
+            }catch(Exception e){
+                System.err.println(e.getMessage());
                 System.exit(1);
             }
         }
@@ -90,10 +84,13 @@ public class Prequential extends Evaluator{
                 Instance value = (Instance)tuple.getValue(0);
                 Boolean Result = myClassifier.test(value);
                 myClassifier.train(value);
+                if(Result){hits_++;}
+                instances_++;
                 _collector.emit(tuple, new Values(Result));
                 _collector.ack(tuple);
             } catch(Exception e){
                 _collector.reportError(e);
+                System.err.println(e.getMessage());
             }
         }
 
@@ -101,22 +98,27 @@ public class Prequential extends Evaluator{
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
             declarer.declare(new Fields("classifier_result"));
         }
+
+        @Override
+        public void cleanup(){
+
+            System.err.println("\n\n\nInstancias OSOSOSO: " + instances_ +  "\nConfirms: " + hits_);
+        }
     }
 
     public static class Prequential_Results extends BaseRichBolt{
         OutputCollector _collector;
-        int confirm;
-        int miss;
+        Long confirm= new Long(0);
+        Long miss= new Long(0);
 
         @Override
         public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
             _collector = collector;
             try{
-                confirm = ((Long) conf.get("my_confirm")).intValue();
-                miss = ((Long) conf.get("my_miss")).intValue();
                 _collector = collector;
             }catch (Exception e){
                 _collector.reportError(e);
+                System.err.println(e.getMessage());
             }
         }
 
@@ -124,11 +126,18 @@ public class Prequential extends Evaluator{
         public void execute(Tuple tuple) {
             try {
                 Boolean value = (Boolean) tuple.getValue(0);
-                if(value){confirm++;}
+                if(value){
+                    if(confirm > Long.MAX_VALUE - 1){
+                        System.err.println("OVERFLOW OVERFLOW OVERFLOW");
+                        System.exit(1);
+                    }
+                    confirm++;
+                }
                 else{miss++;}
                 _collector.ack(tuple);
             } catch(Exception e){
                 _collector.reportError(e);
+                System.err.println(e.getMessage());
             }
         }
 
@@ -138,7 +147,11 @@ public class Prequential extends Evaluator{
 
         @Override
         public void cleanup(){
-            System.out.println("\n\n\nTotal acertos: " + confirm + " Total erros: " + miss);
+
+            float accuracy = confirm + miss;
+            accuracy = (confirm*100)/accuracy;
+
+            System.err.println("\n\n\nInstancias: " + (confirm+miss) + "\nTotal acertos: " + confirm + " Total erros: " + miss + "\nAcuracia: " + accuracy);
         }
     }
 
