@@ -8,8 +8,10 @@ import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.utils.Utils;
+import util.ArffFileSingleton;
 
 import java.io.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by loezerl-fworks on 23/08/17.
@@ -49,15 +51,16 @@ public class Experimenter {
         String KYOTO_DATABASE = "/home/loezerl-fworks/Downloads/kyoto.arff";
 
         ArffFileStream file = new ArffFileStream(KYOTO_DATABASE, -1);
+        ArffFileSingleton.setInstance(file);
 
         conf.put("arff_file", KYOTO_DATABASE);
 
-        KNN myClassifier = new KNN(7, 300, "euclidean");
+        KNN myClassifier = new KNN(7, 1000, "euclidean");
         Classifier.setInstance(myClassifier);
 
         Evaluator myEvaluator = new Prequential(myClassifier, file, builder, conf);
 
-
+        long startTime = System.nanoTime();
         conf.setDebug(false);
 //        conf.setMaxTaskParallelism(3);
         LocalCluster cluster = new LocalCluster();
@@ -65,6 +68,8 @@ public class Experimenter {
         Utils.sleep(10000);
         cluster.killTopology("storm-knn");
         cluster.shutdown();
+        long estimatedTime = System.nanoTime() - startTime;
+        System.err.println("\n=================================\nTempo rodando o programa: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime) + "\n");
 
     }
 

@@ -35,7 +35,7 @@ public class Prequential extends Evaluator{
         this._builder = builder;
 
         this._builder.setSpout("Instances", new GetInstances(), 1);
-        this._builder.setBolt("Prequential", new Classifier_Prequential(), 1)
+        this._builder.setBolt("Prequential", new Classifier_Prequential(), 8)
                 .setNumTasks(1)
                 .shuffleGrouping("Instances");
         this._builder.setBolt("Prequential_Results", new Prequential_Results(), 1)
@@ -102,7 +102,7 @@ public class Prequential extends Evaluator{
         @Override
         public void cleanup(){
 
-            System.err.println("\n\n\nInstancias OSOSOSO: " + instances_ +  "\nConfirms: " + hits_);
+           // System.err.println("\n\n\nInstancias OSOSOSO: " + instances_ +  "\nConfirms: " + hits_);
         }
     }
 

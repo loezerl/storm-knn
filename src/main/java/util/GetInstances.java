@@ -49,9 +49,6 @@ public class GetInstances extends BaseRichSpout {
                 System.err.println(e.getMessage());
             }
         }
-        else{
-            System.err.println("ACABARAM TODAS AS INSTANCIAS");
-        }
     }
 
     @Override

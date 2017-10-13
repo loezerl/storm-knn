@@ -22,6 +22,6 @@ public class Classifier {
         instance = obj;
     }
 
-    public synchronized boolean test(Instance example) throws Exception{return false;}
+    public boolean test(Instance example) throws Exception{return false;}
     public synchronized void  train(Instance example){}
 }

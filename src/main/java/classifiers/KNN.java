@@ -70,7 +70,7 @@ public class KNN extends Classifier implements Serializable{
     }
 
     @Override
-    public synchronized boolean test(Instance example_) throws Exception{
+    public boolean test(Instance example_) throws Exception{
 
         if(Window.size() == 0){return false;}
 
